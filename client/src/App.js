@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import socketIO from 'socket.io-client';
 
@@ -7,13 +8,13 @@ class App extends Component {
         super(props);
 
         this.state = {}
-
-        this.socket = null;
     }
 
     componentDidMount() {
-        // Initialize socket.io connection
-        this.startSocket();
+        if(!this.props.socket) {
+            // Initialize socket.io connection
+            this.startSocket();
+        }
     }
 
     startSocket = () => {
@@ -21,16 +22,26 @@ class App extends Component {
 
         // All websocket listeners
         a.on('connect', () => {
-            this.socket = a;
-            this.forceUpdate(); // DEBUG
-        })
+            this.props.setSocket(a);
+        });
     }
 
     render() {
         return(
-            <h1>{(this.socket) ? "Socket successfully loaded!" : "Still waiting for the websocket connection..."}</h1>
+            null
         );
     }
 }
 
-export default App;
+const mapStateToProps = ({ wsocket }) => ({
+    socket: wsocket
+});
+
+const mapActionsToProps = {
+    setSocket: socket => ({ type: "DECLARE_SOCKET", payload: socket })
+}
+
+export default connect(
+    mapStateToProps,
+    mapActionsToProps
+)(App);
