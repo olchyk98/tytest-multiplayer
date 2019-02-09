@@ -1,0 +1,20 @@
+.gl-loadingi {
+	--size:35px;
+
+    height:var(--size);
+    width:var(--size);
+    border:15px solid white;
+    border-radius:50%;
+    border-right-color:transparent;
+    border-bottom-color:transparent;
+    animation:glloadi_rotate-inf-am 1s linear infinite;
+}
+
+@keyframes glloadi_rotate-inf-am {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}

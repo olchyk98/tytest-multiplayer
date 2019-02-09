@@ -1,0 +1,136 @@
+.rn-gameroom {
+    display:flex;
+    flex-direction:column;
+}
+
+.rn-gameroom-jointit {
+    height:100px;
+    flex-shrink:0;
+    border-bottom:3px solid rgba(0, 0, 0, .2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.rn-gameroom-jointit-mat {
+    font-size:2rem;
+    font-weight:500;
+    font-family:"Exo";
+    text-align:center;
+    color:rgba(0, 0, 0, .95);
+}
+
+.rn-gameroom-jointit-mat > strong {
+    font-weight:600;
+    color:black;
+}
+
+.rn-gameroom-players {
+    --padding:20px;
+
+    padding-left:var(--padding);
+    padding-right:var(--padding);
+    width:calc(100% - var(--padding) * 2);
+    height:100%;
+    flex-shrink:1;
+    background:#59CBC1;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    align-items:stretch;
+}
+
+.rn-gameroom-players-init {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:15px;
+    flex-shrink:0;
+}
+
+.rn-gameroom-players-init-num {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.rn-gameroom-players-init-num > * {
+    --margin:0px;
+    
+    margin-top:var(--margin);
+    margin-bottom:var(--margin);
+    color:white;
+}
+
+.rn-gameroom-players-init-num-mat {
+    font-weight:400;
+    font-family:"Lato";
+    transform:skewX(-7.5deg);
+    font-size:3.25rem;
+}
+
+.rn-gameroom-players-init-num-tit {
+    font-family:"Quicksand";
+    font-weight:400;
+    font-size:1.25rem;
+    text-transform:lowercase;
+}
+
+.rn-gameroom-players-start {
+    --padding:15px;
+
+    height:42.5px;
+    font-weight:600;
+    cursor:pointer;
+    font-size:1.5rem;
+    padding-left:var(--padding);
+    padding-right:var(--padding);
+    border-radius:3px;
+    background:#333333;
+    color:white;
+}
+
+.rn-gameroom-players-mat {
+    --padding:30px;
+
+    padding:var(--padding);
+    height:calc(100% - var(--padding) * 2);
+    width:calc(100% - var(--padding) * 2);
+    flex-shrink:1;
+    display:flex;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    justify-content:space-around;
+    overflow:scroll;
+}
+
+.rn-gameroom-players-mat-item {
+    font-size:1.5rem;
+    display:flex;
+    align-items:center;
+    cursor:pointer;
+    color:rgba(255, 255, 255, .9);
+    margin:15px;
+}
+
+.rn-gameroom-players-mat-item > * {
+    --margin:5px;
+
+    margin-left:var(--margin);
+    margin-right:var(--margin);
+}
+
+.rn-gameroom-players-mat-item > div {
+    display:none;
+    /*visibility:hidden;*/
+    color:blue;
+}
+
+.rn-gameroom-players-mat-item:hover {
+    text-decoration:line-through;
+}
+
+.rn-gameroom-players-mat-item:hover > div {
+    display:block;
+    /*visibility:visible;*/
+}

@@ -1,7 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 
 import socketIO from 'socket.io-client';
+
+import Menu from './pages/menu';
+import GameRoom from './pages/gameroom';
 
 class App extends Component {
     constructor(props) {
@@ -27,14 +30,16 @@ class App extends Component {
     }
 
     render() {
-        return(
-            null
-        );
+        return ({
+            "MENU": <Menu />,
+            "GAME_ROOM": <GameRoom />
+        })[this.props.page];
     }
 }
 
-const mapStateToProps = ({ wsocket }) => ({
-    socket: wsocket
+const mapStateToProps = ({ wsocket, currentPage }) => ({
+    socket: wsocket,
+    page: currentPage
 });
 
 const mapActionsToProps = {
