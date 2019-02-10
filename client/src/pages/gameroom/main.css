@@ -108,10 +108,13 @@
     font-size:1.5rem;
     display:flex;
     align-items:center;
-    cursor:pointer;
     color:rgba(255, 255, 255, .9);
     margin:15px;
     user-select:none;
+}
+
+.rn-gameroom-players-mat-item.banall {
+    cursor:pointer;
 }
 
 .rn-gameroom-players-mat-item > * {
@@ -127,11 +130,11 @@
     color:blue;
 }
 
-.rn-gameroom-players-mat-item:hover {
+.rn-gameroom-players-mat-item.banall:hover {
     text-decoration:line-through;
 }
 
-.rn-gameroom-players-mat-item:hover > div {
+.rn-gameroom-players-mat-item.banall:hover > div {
     display:block;
     /*visibility:visible;*/
 }

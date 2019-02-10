@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 const reduxStore = createStore(
 	reducer,
 	{
-        currentPage: "GAME_PROCESS"
+        currentPage: "MENU"
     },
 	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );

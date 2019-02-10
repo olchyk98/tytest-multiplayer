@@ -24,9 +24,34 @@ class App extends Component {
     startSocket = () => {
         const a = socketIO("http://localhost:4000");
 
-        // All websocket listeners
+        // Connected to the game server
         a.on('connect', () => {
-            this.props.setSocket(a);
+            this.props.castSocketError(false);
+        });
+
+        // Receive socket id and confirm that server works
+        a.on("TELL_SOCKET", id => {
+            if(!this.props.socket) {
+                this.props.setSocket(a);
+                this.props.setSocketID(id);
+            }
+        });
+
+        // Disconnected from the game server
+        a.on('disconnect', () => {
+            this.props.castSocketError(true);
+            a.open();
+        });
+
+        // Successfully created a new game room
+        a.on("CREATE_ROOM_DONE", data => {
+            if(typeof data !== "object") {
+                alert("DEV ERROR. CONTACT DEVELOPER");
+                console.error("SOCKET EVENT CREATE_ROOM_DONE DID NOT RETURN OBJECT");
+            }
+
+
+            this.props.setRoom(data);
         });
     }
 
@@ -45,7 +70,10 @@ const mapStateToProps = ({ wsocket, currentPage }) => ({
 });
 
 const mapActionsToProps = {
-    setSocket: socket => ({ type: "DECLARE_SOCKET", payload: socket })
+    setSocket: socket => ({ type: "DECLARE_SOCKET", payload: socket }),
+    setSocketID: id => ({ type: "DECLARE_SOCKRT_ID", payload: id }),
+    setRoom: payload => ({ type: "SET_ROOM", payload }),
+    castSocketError: payload => ({ type: "SET_SOCKET_ERROR", payload })
 }
 
 export default connect(

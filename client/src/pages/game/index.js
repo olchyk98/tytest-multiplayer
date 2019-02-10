@@ -1,7 +1,7 @@
 import React, { Component, PureComponent } from 'react';
 import './main.css';
 
-import LoadIcon from '../__forall__/load.icon';
+import LoadBG from '../__forall__/loadingbg';
 
 class Dock extends Component {
     render() {
@@ -196,9 +196,9 @@ class Hero extends Component {
     render() {
         return(
             <>
-                <div className={ `rn-gameprocess-prepare${ (false) ? "" : " enabled" }` }>
-                    <LoadIcon />
-                </div>
+                <LoadBG
+                    active={ false }
+                />
                 <div className="rn rn-gameprocess">
                     {/* dock */}
                     <Dock />
@@ -210,6 +210,8 @@ class Hero extends Component {
                             this.state.text.filter((io, ia) => {
                                 if(ia < window.innerWidth / 5 + this.state.cursor) {
                                     return io;
+                                } else {
+                                    return false;
                                 }
                             })
                         }
