@@ -1,0 +1,188 @@
+:root {
+    --game_dockh:65px;
+    --game_inph:135px;
+    --game_audsbg:linear-gradient(-85deg, #6E5EA8, #458DC4);
+}
+
+.rn-gameprocess {
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+}
+
+.rn-gameprocess-roomstats {
+    --padding:15px;
+
+    flex-shrink:0;
+    padding-left:var(--padding);
+    padding-right:var(--padding);
+    height:var(--game_dockh);
+    width:calc(100% - var(--padding) * 2);
+    display:flex;
+    align-items:center;
+    background:rgba(0, 0, 255, .1);
+    box-shadow:0px 1px 15px -5px rgba(0, 0, 0, .5);
+    z-index:2;
+}
+
+.rn-gameprocess-roomstats-pin {
+    font-size:1.25em;
+    font-family:"Exo";
+    font-weight:400;
+}
+
+.rn-gameprocess-roomstats-pin > strong {
+    font-weight:600;
+}
+
+.rn-gameprocess-scoreboard {
+    --padding:25px;
+
+    padding:var(--padding);
+    height:calc(100% - var(--padding) * 2);
+    width:calc(100% - var(--padding) * 2);
+    background:var(--game_audsbg);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    overflow:scroll;
+    position:relative;
+}
+
+.rn-gameprocess-scoreboard-player {
+    width:175px;
+    position:relative;
+    height:45px;
+    display:flex;
+    align-items:center;
+    background:rgba(255, 255, 255, .1);
+    border-radius:5px;
+    padding:10px;
+    margin:15px;
+}
+
+.rn-gameprocess-scoreboard-player-color {
+    --size:25px;
+
+    height:2px;
+    width:25px;
+    position:relative;
+    bottom:-1px;
+    border-radius:5px;
+    border:1px solid rgba(0, 0, 0, .1);
+    margin-right:10px;
+}
+
+.rn-gameprocess-scoreboard-player-name {
+    font-family:"Exo";
+    font-weight:400;
+    color:white;
+    font-size:1.1rem;
+}
+
+.rn-gameprocess-scoreboard-player-score {
+    margin-left:auto;
+    font-family:"Lato";
+    font-size:1.25rem;
+    color:white;
+    filter:drop-shadow(0px 0px 1px rgba(255, 255, 255, .25));
+}
+
+.rn-gameprocess-input {
+    flex-shrink:0;
+    height:var(--game_inph);
+    background:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+}
+
+.rn-gameprocess-input,
+.rn-gameprocess-input * {
+    outline:0;
+}
+
+.rn-gameprocess-input-rails {
+    font-family:"Quicksand";
+    font-size:2.25rem;
+    font-weight:400;
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.rn-gameprocess-input-rails > div {
+    min-width:5px;
+}
+
+.rn-gameprocess-input:before {
+    content:'';
+    position:absolute;
+    top:50%;
+    left:50%;
+    margin-right:50%;
+    transform:translate(-50%, -50%);
+    height:45px;
+    width:2px;
+    background:black;
+    z-index:2;
+    visibility:hidden;
+}
+
+.rn-gameprocess-input.infocus:before {
+    visibility:visible;
+    animation:gameprocess_input-blink-carent-inf-am .25s ease-in-out infinite alternate;
+}
+
+@keyframes gameprocess_input-blink-carent-inf-am {
+    from {
+        opacity:1;
+    }
+    to {
+        opacity:0;
+    }
+}
+
+.rn-gameprocess-input-letter.passed {
+    color:green;
+}
+
+.rn-gameprocess-input-letter.failed {
+    color:red;
+}
+
+.rn-gameprocess-stats {
+    height:80%;
+    background:var(--game_audsbg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.rn-gameprocess-stats-block {
+    margin:15px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    color:white;
+}
+
+.rn-gameprocess-stats-block-number {
+    font-size:3rem;
+    font-family:"Quicksand";
+    font-weight:100;
+}
+
+.rn-gameprocess-stats-block-title {
+    font-family:200;
+    font-family:"Quicksand";
+    text-transform:uppercase;
+    font-size:.85rem;
+}
