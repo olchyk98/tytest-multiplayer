@@ -202,7 +202,7 @@ class Hero extends Component {
                 <Input
                     text={
                         this.state.text.filter((io, ia) => {
-                            if(ia > this.state.cursor - window.innerWidth / 5 && ia < window.innerWidth / 5 + this.state.cursor) {
+                            if(ia < window.innerWidth / 5 + this.state.cursor) {
                                 return io;
                             }
                         })
