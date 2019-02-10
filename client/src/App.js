@@ -1,10 +1,11 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import socketIO from 'socket.io-client';
 
 import Menu from './pages/menu';
 import GameRoom from './pages/gameroom';
+import Game from './pages/game';
 
 class App extends Component {
     constructor(props) {
@@ -32,7 +33,8 @@ class App extends Component {
     render() {
         return ({
             "MENU": <Menu />,
-            "GAME_ROOM": <GameRoom />
+            "GAME_ROOM": <GameRoom />,
+            "GAME_PROCESS": <Game />
         })[this.props.page];
     }
 }

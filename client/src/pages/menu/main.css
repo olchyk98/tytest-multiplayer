@@ -72,3 +72,26 @@
 .rn-menu-ps-creator > a {
     font-weight:500;
 }
+
+.rn-menu-piroom {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.rn-menu-piroom-pininput {
+    --padding:7.5px;
+
+    height:47.5px;
+    border:2px solid rgba(0, 0, 0, .25);
+    font-size:1.25em;
+    color:rgba(0, 0, 0, .85);
+    font-family:"Exo";
+    font-weight:600;
+    text-transform:uppercase;
+    text-align:center;
+    width:calc(100% - var(--padding) * 2);
+    padding-left:var(--padding);
+    padding-right:var(--padding);
+    background:white;   
+}
