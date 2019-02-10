@@ -55,13 +55,13 @@ class Input extends PureComponent { // WARNING: DO NOT USE STATELESS COMPONENT H
                 tabIndex="-1"
                 onFocus={ this.props._onFocus }
                 onBlur={ this.props._onBlur }>
-                <div className="rn-gameprocess-input-rails">
+                <div className="rn-gameprocess-input-rails" style={{
+                    "transform": `translate(-${ this.props.cursorX }px, -50%)`
+                }}>
                     {
                         this.props.text.map((session, index) => (
                             <div
-                                key={ index } style={{
-                                    "transform": `translateX(-${ this.props.cursorX }px)`
-                                }}
+                                key={ index }
                                 ref={(ref) => {
                                     if(!ref) return;
 
@@ -134,7 +134,14 @@ class Hero extends Component {
 
     componentDidMount() {
         this.setState(() => ({
-            text: "Hello, World!".split("").map(io => ({
+            text: `
+                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare vestibulum elit, cursus maximus arcu efficitur eu. Donec turpis leo, viverra sed orci ac, semper ullamcorper ligula. Nam a diam eget mi ultricies suscipit id a dolor. Aenean posuere hendrerit fringilla. Proin posuere lobortis mi id tincidunt. Nulla accumsan orci dui, sed placerat massa consequat non. Nam interdum eget dolor quis venenatis. Nulla tempor pellentesque mauris bibendum sollicitudin. In facilisis porttitor odio nec vestibulum. Donec sollicitudin vel massa ut rhoncus.
+                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare vestibulum elit, cursus maximus arcu efficitur eu. Donec turpis leo, viverra sed orci ac, semper ullamcorper ligula. Nam a diam eget mi ultricies suscipit id a dolor. Aenean posuere hendrerit fringilla. Proin posuere lobortis mi id tincidunt. Nulla accumsan orci dui, sed placerat massa consequat non. Nam interdum eget dolor quis venenatis. Nulla tempor pellentesque mauris bibendum sollicitudin. In facilisis porttitor odio nec vestibulum. Donec sollicitudin vel massa ut rhoncus.
+                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare vestibulum elit, cursus maximus arcu efficitur eu. Donec turpis leo, viverra sed orci ac, semper ullamcorper ligula. Nam a diam eget mi ultricies suscipit id a dolor. Aenean posuere hendrerit fringilla. Proin posuere lobortis mi id tincidunt. Nulla accumsan orci dui, sed placerat massa consequat non. Nam interdum eget dolor quis venenatis. Nulla tempor pellentesque mauris bibendum sollicitudin. In facilisis porttitor odio nec vestibulum. Donec sollicitudin vel massa ut rhoncus.
+                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare vestibulum elit, cursus maximus arcu efficitur eu. Donec turpis leo, viverra sed orci ac, semper ullamcorper ligula. Nam a diam eget mi ultricies suscipit id a dolor. Aenean posuere hendrerit fringilla. Proin posuere lobortis mi id tincidunt. Nulla accumsan orci dui, sed placerat massa consequat non. Nam interdum eget dolor quis venenatis. Nulla tempor pellentesque mauris bibendum sollicitudin. In facilisis porttitor odio nec vestibulum. Donec sollicitudin vel massa ut rhoncus.
+                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare vestibulum elit, cursus maximus arcu efficitur eu. Donec turpis leo, viverra sed orci ac, semper ullamcorper ligula. Nam a diam eget mi ultricies suscipit id a dolor. Aenean posuere hendrerit fringilla. Proin posuere lobortis mi id tincidunt. Nulla accumsan orci dui, sed placerat massa consequat non. Nam interdum eget dolor quis venenatis. Nulla tempor pellentesque mauris bibendum sollicitudin. In facilisis porttitor odio nec vestibulum. Donec sollicitudin vel massa ut rhoncus.
+                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare vestibulum elit, cursus maximus arcu efficitur eu. Donec turpis leo, viverra sed orci ac, semper ullamcorper ligula. Nam a diam eget mi ultricies suscipit id a dolor. Aenean posuere hendrerit fringilla. Proin posuere lobortis mi id tincidunt. Nulla accumsan orci dui, sed placerat massa consequat non. Nam interdum eget dolor quis venenatis. Nulla tempor pellentesque mauris bibendum sollicitudin. In facilisis porttitor odio nec vestibulum. Donec sollicitudin vel massa ut rhoncus.
+            `.trim().split("").map(io => ({
                 failed: false,
                 passed: false,
                 symbol: io
@@ -145,7 +152,9 @@ class Hero extends Component {
     focusInput = a => {
         if(a) {
             this.windowkd = ({ key }) => {
-                if(key === "Backspace" && this.state.cursor > 0) {
+                if(key === "Backspace") {
+                    if(this.state.cursor <= 0) return;
+
                     this.setState(({ cursor, cursorX }) => ({
                         cursor: cursor -1,
                         cursorX: cursorX - this.prevSplit
@@ -191,7 +200,13 @@ class Hero extends Component {
                 <Scoreboard />
                 {/* input */}
                 <Input
-                    text={ this.state.text }
+                    text={
+                        this.state.text.filter((io, ia) => {
+                            if(ia > this.state.cursor - window.innerWidth / 5 && ia < window.innerWidth / 5 + this.state.cursor) {
+                                return io;
+                            }
+                        })
+                    }
                     cursor={ this.state.cursor }
                     cursorX={ this.state.cursorX }
                     onReceiveCSplit={ a => this.currSplit = a }
