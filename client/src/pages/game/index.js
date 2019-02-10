@@ -1,6 +1,8 @@
 import React, { Component, PureComponent } from 'react';
 import './main.css';
 
+import LoadIcon from '../__forall__/load.icon';
+
 class Dock extends Component {
     render() {
         return(
@@ -193,31 +195,36 @@ class Hero extends Component {
 
     render() {
         return(
-            <div className="rn rn-gameprocess">
-                {/* dock */}
-                <Dock />
-                {/* scoreboard */}
-                <Scoreboard />
-                {/* input */}
-                <Input
-                    text={
-                        this.state.text.filter((io, ia) => {
-                            if(ia < window.innerWidth / 5 + this.state.cursor) {
-                                return io;
-                            }
-                        })
-                    }
-                    cursor={ this.state.cursor }
-                    cursorX={ this.state.cursorX }
-                    onReceiveCSplit={ a => this.currSplit = a }
-                    onReceivePSplit={ a => this.prevSplit = a }
-                    _onFocus={ () => this.focusInput(true) }
-                    _onBlur={ () => this.focusInput(false) }
-                    inFocus={ this.state.inputInFocus }
-                />
-                {/* speed/time */}
-                <Stats />
-            </div>
+            <>
+                <div className={ `rn-gameprocess-prepare${ (false) ? "" : " enabled" }` }>
+                    <LoadIcon />
+                </div>
+                <div className="rn rn-gameprocess">
+                    {/* dock */}
+                    <Dock />
+                    {/* scoreboard */}
+                    <Scoreboard />
+                    {/* input */}
+                    <Input
+                        text={
+                            this.state.text.filter((io, ia) => {
+                                if(ia < window.innerWidth / 5 + this.state.cursor) {
+                                    return io;
+                                }
+                            })
+                        }
+                        cursor={ this.state.cursor }
+                        cursorX={ this.state.cursorX }
+                        onReceiveCSplit={ a => this.currSplit = a }
+                        onReceivePSplit={ a => this.prevSplit = a }
+                        _onFocus={ () => this.focusInput(true) }
+                        _onBlur={ () => this.focusInput(false) }
+                        inFocus={ this.state.inputInFocus }
+                    />
+                    {/* speed/time */}
+                    <Stats />
+                </div>
+            </>
         );
     }
 }
