@@ -88,10 +88,13 @@
     color:rgba(0, 0, 0, .85);
     font-family:"Exo";
     font-weight:600;
-    text-transform:uppercase;
     text-align:center;
     width:calc(100% - var(--padding) * 2);
     padding-left:var(--padding);
     padding-right:var(--padding);
     background:white;   
+}
+
+.rn-menu-piroom-pininput::placeholder {
+    text-transform:uppercase;
 }

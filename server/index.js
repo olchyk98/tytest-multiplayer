@@ -36,7 +36,6 @@ io.on('connection', socket => {
             }
         }
 
-        socket.join(socket.id);
         const room = {
             id: socket.id,
             pin: generatePIN(),
@@ -44,16 +43,58 @@ io.on('connection', socket => {
                 id: socket.id,
                 nickname
             }],
-            creator: socket.id
+            creator: socket.id,
+            inGame: false
         }
+        socket.join(room.id);
 
         rooms.push(room);
 
-        socket.emit("CREATE_ROOM_DONE", {
+        socket.emit("JOIN_ROOM_SUCCESS", {
             pin: room.pin,
-            players: room.players
+            players: room.players,
+            inGame: room.inGame,
+            creator: room.creator
         });
 
         console.log(`Game ${ room.id } with PIN ${ room.pin } was successfully created!`);
+    });
+
+    socket.on("JOIN_ROOM", ({ nickname, pin }) => {
+        // Check if the room exists
+        let a = rooms.find(io => io.pin === pin);
+        if(!a) {
+            return socket.emit("ROOM_ERROR", { text: "Room with this PIN doesn't exist", target: 'RED' });
+        }
+
+        // Connect user
+        socket.join(a.id);
+        a.players.push({
+            id: socket.id,
+            nickname
+        });
+
+        socket.emit("JOIN_ROOM_SUCCESS", {
+            pin: a.pin,
+            players: a.players,
+            inGame: a.inGame,
+            creator: a.creator
+        });
+
+        io.to(a.id).emit("ROOM_UPDATED", {
+            players: a.players,
+            inGame: a.inGame
+        });
+    });
+
+    socket.on("START_GAME", ({ roomID }) => {
+        let a = rooms.find(io => roomID === io.id && players.map(io => io.id).includes(socket.id) && creator === socket.id);
+        if(!a)
+            return socket.emit("ROOM_ERROR", { text: "Sorry, we couldn't confirm your game session", target: 'RED' });
+
+        a.inGame = true;
+        io.to(a.id).emit("ROOM_UPDATED", {
+            inGame: a.inGame
+        });
     });
 });

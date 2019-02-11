@@ -23,47 +23,60 @@ class Player extends PureComponent {
 }
 
 class Hero extends Component {
+    startGame = () => {
+
+    }
+
     render() {
         if(!this.props.room || !this.props.room.players) return <LoadBG />
 
         return(
-            <div className="rn rn-gameroom">
-                <section className="rn-gameroom-jointit">
-                    <span className="rn-gameroom-jointit-mat">Other players can join this room using PIN: <strong>{ this.props.room.pin }</strong></span>
-                </section>
-                <section className="rn-gameroom-players">
-                    <section className="rn-gameroom-players-init">
-                        <div className="rn-gameroom-players-init-num">
-                            <span className="rn-gameroom-players-init-num-mat">{ this.props.room.players.length }</span>
-                            <span className="rn-gameroom-players-init-num-tit">players</span>
-                        </div>
-                        <button className="definp rn-gameroom-players-start">
-                            Start
-                        </button>
+            <>
+                { (!this.props.socketError) ? null : <LoadBG /> }
+                <div className="rn rn-gameroom">
+                    <section className="rn-gameroom-jointit">
+                        <span className="rn-gameroom-jointit-mat">Other players can join this room using PIN: <strong>{ this.props.room.pin }</strong></span>
                     </section>
-                    <FlipMove className="rn-gameroom-players-mat" enterAnimation="fade" leaveAnimation="fade">
-                        {
-                            this.props.room.players.map((session) => (
-                                <Player
-                                    key={ session.id }
-                                    nick={ session.nickname }
-                                    canBan={
-                                        this.props.room.creator === this.props.myID &&
-                                        this.props.room.creator !== session.id
-                                    }
-                                />
-                            ))
-                        }
-                    </FlipMove>
-                </section>
-            </div>
+                    <section className="rn-gameroom-players">
+                        <section className="rn-gameroom-players-init">
+                            <div className="rn-gameroom-players-init-num">
+                                <span className="rn-gameroom-players-init-num-mat">{ this.props.room.players.length }</span>
+                                <span className="rn-gameroom-players-init-num-tit">players</span>
+                            </div>
+                            {
+                                (this.props.room.creator !== this.props.myID) ? null : (
+                                    <button className="definp rn-gameroom-players-start" onClick={ this.startGame }>
+                                        Start
+                                    </button>
+                                )
+                            }
+                        </section>
+                        <FlipMove className="rn-gameroom-players-mat" enterAnimation="fade" leaveAnimation="fade">
+                            {
+                                this.props.room.players.map((session) => (
+                                    <Player
+                                        key={ session.id }
+                                        nick={ session.nickname }
+                                        canBan={
+                                            this.props.room.creator === this.props.myID &&
+                                            this.props.room.creator !== session.id
+                                        }
+                                    />
+                                ))
+                            }
+                        </FlipMove>
+                    </section>
+                </div>
+            </>
         );
     }
 }
 
-const mapStateToProps = ({ currentRoom, wsocketID }) => ({
+const mapStateToProps = ({ currentRoom, wsocketID, socketError, wsocket }) => ({
     room: currentRoom,
-    myID: wsocketID
+    myID: wsocketID,
+    socketError,
+    socket: wsocket
 });
 
 export default connect(

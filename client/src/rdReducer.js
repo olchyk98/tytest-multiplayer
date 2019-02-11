@@ -12,10 +12,20 @@ export default function reducer(state = {}, { type, payload }) {
             a.currentPage = payload;
         break;
         case 'SET_ROOM':
-            a.currentRoom = payload;
+            if(!a.currentRoom) {
+                a.currentRoom = payload;
+            } else {
+                a.currentRoom = {
+                    ...a.currentRoom,
+                    ...payload
+                }
+            }
         break;
         case 'SET_SOCKET_ERROR':
             a.socketError = payload;
+        break;
+        case 'CAST_ERROR':
+            a.globalError = payload;
         break;
 		default:break;
 	}
