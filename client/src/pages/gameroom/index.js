@@ -23,8 +23,21 @@ class Player extends PureComponent {
 }
 
 class Hero extends Component {
-    startGame = () => {
+    constructor(props) {
+        super(props);
 
+        this.state = {
+            isEntering: false
+        }
+    }
+
+    startGame = () => {
+        this.setState(() => ({
+            isEntering: true
+        }));
+        this.props.socket.emit("START_GAME", {
+            roomID: this.props.room.id
+        });
     }
 
     render() {
@@ -32,7 +45,7 @@ class Hero extends Component {
 
         return(
             <>
-                { (!this.props.socketError) ? null : <LoadBG /> }
+                { (!this.props.socketError && !this.state.isEntering) ? null : <LoadBG /> }
                 <div className="rn rn-gameroom">
                     <section className="rn-gameroom-jointit">
                         <span className="rn-gameroom-jointit-mat">Other players can join this room using PIN: <strong>{ this.props.room.pin }</strong></span>

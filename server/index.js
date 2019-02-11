@@ -41,10 +41,13 @@ w_io.on('connection', socket => {
             pin: generatePIN(),
             players: [{
                 id: socket.id,
-                nickname
+                nickname,
+                symbolsTyped: 0
             }],
             creator: socket.id,
-            inGame: false
+            inGame: false,
+            initTime: 3e3,
+            gameTime: 6e4, // 60k
         }
         socket.join(room.id);
 
@@ -54,7 +57,10 @@ w_io.on('connection', socket => {
             pin: room.pin,
             players: room.players,
             inGame: room.inGame,
-            creator: room.creator
+            creator: room.creator,
+            id: room.id,
+            initTime: room.initTime,
+            gameTime: room.gameTime
         });
 
         console.log(`Game ${ room.id } with PIN ${ room.pin } was successfully created!`);
@@ -71,14 +77,18 @@ w_io.on('connection', socket => {
         socket.join(a.id);
         a.players.push({
             id: socket.id,
-            nickname
+            nickname,
+            symbolsTyped: 0
         });
 
         socket.emit("JOIN_ROOM_SUCCESS", {
             pin: a.pin,
             players: a.players,
             inGame: a.inGame,
-            creator: a.creator
+            creator: a.creator,
+            id: a.id,
+            initTime: a.initTime,
+            gameTime: a.gameTime
         });
 
         w_io.to(a.id).emit("ROOM_UPDATED", {
@@ -88,14 +98,58 @@ w_io.on('connection', socket => {
     });
 
     socket.on("START_GAME", ({ roomID }) => {
-        let a = rooms.find(io => roomID === io.id && players.map(io => io.id).includes(socket.id) && creator === socket.id);
-        if(!a)
+    let a = rooms.find(io => (
+            roomID === io.id &&
+            io.players.map(io => io.id).includes(socket.id) &&
+            io.creator === socket.id
+        ));
+
+        if(!a) {
             return socket.emit("ROOM_ERROR", { text: "Sorry, we couldn't confirm your game session", target: 'RED' });
+        }
 
         a.inGame = true;
-        w_io.to(a.id).emit("ROOM_UPDATED", {
+        w_io.to(a.id).emit("START_GAME_RESOLVED", {
             inGame: a.inGame
         });
+
+        // 1e3 - 1000
+
+        let intE = a.initTime / 1e3;
+        let int = setInterval(() => {
+            // Change in-room timer
+            a.initTime -= 1e3;
+
+            // Alert players that timer was changed
+            w_io.to(a.id).emit("ROOM_UPDATED", {
+                initTime: a.initTime
+            });
+
+            // Check if timer needs for one more second
+            if(--intE <= 0) {
+                // Break timer
+                clearInterval(int);
+
+                // Launch game timer
+                intE = a.gameTime / 1e3;
+                int = setInterval(() => {
+                    a.gameTime -= 1e3;
+
+                    w_io.to(a.id).emit("ROOM_UPDATED", {
+                        gameTime: a.gameTime
+                    });
+
+                    if(--intE <= 0) {
+                        clearInterval(int);
+
+                         w_io.to(a.id).emit("ROOM_UPDATED", {
+                            inGame: false
+                        });
+                    }
+                }, 1e3);
+            }
+        }, 1e3);
+
     });
 
     socket.on('disconnect', () => {

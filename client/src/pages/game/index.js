@@ -1,13 +1,16 @@
 import React, { Component, PureComponent } from 'react';
 import './main.css';
 
-import LoadBG from '../__forall__/loadingbg';
+import { connect } from 'react-redux';
 
-class Dock extends Component {
+import LoadBG from '../__forall__/loadingbg';
+import FlipMove from 'react-flip-move';
+
+class Dock extends PureComponent {
     render() {
         return(
             <section className="rn-gameprocess-roomstats">
-                <span className="rn-gameprocess-roomstats-pin">ROOM PIN: <strong>329784901</strong></span>
+                <span className="rn-gameprocess-roomstats-pin">ROOM PIN: <strong>{ this.props.pin }</strong></span>
             </section>
         );
     }
@@ -22,8 +25,8 @@ class ScoreBoardPlayer extends PureComponent {
                     style={{
                         background: "red"
                     }}></section>
-                <span className="rn-gameprocess-scoreboard-player-name">oles123</span>
-                <span className="rn-gameprocess-scoreboard-player-score">31</span>
+                <span className="rn-gameprocess-scoreboard-player-name">{ this.props.nick }</span>
+                <span className="rn-gameprocess-scoreboard-player-score">{ this.props.symbols }</span>
             </article>    
         );
     }
@@ -32,19 +35,18 @@ class ScoreBoardPlayer extends PureComponent {
 class Scoreboard extends Component {
     render() {
         return(
-            <section className="rn-gameprocess-scoreboard">
-                <ScoreBoardPlayer />
-                <ScoreBoardPlayer />
-                <ScoreBoardPlayer />
-                <ScoreBoardPlayer />
-                <ScoreBoardPlayer />
-                <ScoreBoardPlayer />
-                <ScoreBoardPlayer />
-                <ScoreBoardPlayer />
-                <ScoreBoardPlayer />
-                <ScoreBoardPlayer />
-                <ScoreBoardPlayer />
-            </section>
+            <FlipMove enterAnimation="fade" leaveAnimation="fade" className="rn-gameprocess-scoreboard">
+                {
+                    this.props.players
+                    .sort(({ symbolsTyped: a }, { symbolsTyped: b }) => a > b).map(({ id, symbolsTyped, nickname }) => (
+                        <ScoreBoardPlayer
+                            key={ id }
+                            symbols={ symbolsTyped }
+                            nick={ nickname }
+                        />
+                    ))
+                }
+            </FlipMove>
         );
     }
 }
@@ -194,16 +196,26 @@ class Hero extends Component {
     }
 
     render() {
+        if(!this.props.room.players) return console.log("WTF") || null;
+
         return(
             <>
-                <LoadBG
-                    active={ false }
-                />
+                {
+                    (!this.props.initTime) ? null : (
+                        <div className="rn-gameprocess_out-init">
+                            <span>{ this.props.initTime }</span>
+                        </div>    
+                    )
+                }
                 <div className="rn rn-gameprocess">
                     {/* dock */}
-                    <Dock />
+                    <Dock
+                        pin={ this.props.room.pin }
+                    />
                     {/* scoreboard */}
-                    <Scoreboard />
+                    <Scoreboard
+                        players={ this.props.room.players }
+                    />
                     {/* input */}
                     <Input
                         text={
@@ -231,4 +243,15 @@ class Hero extends Component {
     }
 }
 
-export default Hero;
+const mapStateToProps = ({ currentRoom }) => ({
+    room: currentRoom
+});
+
+// const mapActionsToProps = {
+// 
+// }
+
+export default connect(
+    mapStateToProps
+    // mapActionsToProps
+)(Hero);

@@ -47,14 +47,20 @@ class App extends Component {
         });
 
         // Successfully created a new game room
-        a.on("JOIN_ROOM_SUCCESS", ({ pin, players, inGame, creator }) => {
-            this.props.setRoom({ pin, players, inGame, creator });
+        a.on("JOIN_ROOM_SUCCESS", ({ pin, players, inGame, creator, id, initTime, gameTime }) => {
+            this.props.setRoom({ pin, players, inGame, creator, id, initTime, gameTime });
             this.props.route("GAME_ROOM");
         });
 
         // Room data updated
-        a.on("ROOM_UPDATED", ({ players, inGame }) => {
-            this.props.setRoom({ players, inGame });
+        a.on("ROOM_UPDATED", data => {
+            this.props.setRoom(data);
+        });
+
+        // Game started
+        a.on("START_GAME_RESOLVED", ({ inGame }) => {
+            this.props.setRoom({ inGame });
+            this.props.route("GAME_PROCESS");
         });
 
         // Room error
