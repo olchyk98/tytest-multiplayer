@@ -105,15 +105,15 @@ class Stats extends Component {
         return(
             <section className="rn-gameprocess-stats">
                 <StatsBlock
-                    number="15"
+                    number={ this.props.sleft }
                     title="seconds left"
                 />
                 <StatsBlock
-                    number="15"
+                    number={ this.props.symbols }
                     title="symbols"
                 />
                 <StatsBlock
-                    number="4"
+                    number={ this.props.mypos }
                     title="position"
                 />
             </section>
@@ -201,9 +201,12 @@ class Hero extends Component {
         return(
             <>
                 {
-                    (!this.props.initTime) ? null : (
+                    (!this.props.socketError) ? null : <LoadBG />
+                }
+                {
+                    (!this.props.room.initTime) ? null : (
                         <div className="rn-gameprocess_out-init">
-                            <span>{ this.props.initTime }</span>
+                            <span>{ this.props.room.initTime / 1000 }</span>
                         </div>    
                     )
                 }
@@ -236,15 +239,21 @@ class Hero extends Component {
                         inFocus={ this.state.inputInFocus }
                     />
                     {/* speed/time */}
-                    <Stats />
+                    <Stats
+                        sleft={ this.props.room.gameTime / 1000 }
+                        symbols={ this.props.room.players.find(io => io.id === this.props.myID).symbolsTyped }
+                        mypos={ this.props.room.players.findIndex(io => io.id === this.props.myID) + 1 }
+                    />
                 </div>
             </>
         );
     }
 }
 
-const mapStateToProps = ({ currentRoom }) => ({
-    room: currentRoom
+const mapStateToProps = ({ currentRoom, socketError, wsocketID }) => ({
+    room: currentRoom,
+    socketError,
+    myID: wsocketID
 });
 
 // const mapActionsToProps = {

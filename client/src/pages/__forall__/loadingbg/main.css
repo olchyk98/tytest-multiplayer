@@ -8,6 +8,6 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    z-index:30;
+    z-index:280;
     transition:all var(--trans);
 }
