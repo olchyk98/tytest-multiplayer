@@ -2,12 +2,12 @@ const app = require('express')();
 const socketIO = require('socket.io');
 
 const server = app.listen(4000, () => console.log("Server is listening on port 4000!"));
-const io = socketIO(server);
+const w_io = socketIO(server);
 
 const sockets = {};
 const rooms = [];
 
-io.on('connection', socket => {
+w_io.on('connection', socket => {
 	console.log(`${ socket.id } was connected to the game server!`);
     sockets[socket.id] = socket; // Push socket
 
@@ -81,7 +81,7 @@ io.on('connection', socket => {
             creator: a.creator
         });
 
-        io.to(a.id).emit("ROOM_UPDATED", {
+        w_io.to(a.id).emit("ROOM_UPDATED", {
             players: a.players,
             inGame: a.inGame
         });
@@ -93,8 +93,29 @@ io.on('connection', socket => {
             return socket.emit("ROOM_ERROR", { text: "Sorry, we couldn't confirm your game session", target: 'RED' });
 
         a.inGame = true;
-        io.to(a.id).emit("ROOM_UPDATED", {
+        w_io.to(a.id).emit("ROOM_UPDATED", {
             inGame: a.inGame
         });
+    });
+
+    socket.on('disconnect', () => {
+        // Quit all games
+        rooms.forEach((io, ia, arr) => {
+            let a = io.players.findIndex(io => io.id === socket.id);
+
+            if(a !== -1) {
+                arr[ia].players.splice(a, 1);
+
+                w_io.to(io.id).emit("ROOM_UPDATED", {
+                    players: arr[ia].players
+                });
+            }
+        });
+
+        // Remove from the sockets array
+        delete sockets[socket.id];
+
+        // ...
+        console.log(`${ socket.id } disconnected from the game server!`);
     });
 });
