@@ -149,7 +149,21 @@ w_io.on('connection', socket => {
                 }, 1e3);
             }
         }, 1e3);
+    });
 
+    socket.on("GAME_SYMBOL_SUBMIT", ({ roomID }) => {
+        let a = rooms.find(io => io.id === roomID);
+        if(!a) {
+            return socket.emit("ROOM_ERROR", { text: "Sorry, we couldn't confirm your game session", target: 'RED' });
+        }
+
+        if(!a.gameTime || a.initTime) return;
+
+        a.players.find(io => io.id === socket.id).symbolsTyped++;
+
+        w_io.to(a.id).emit("ROOM_UPDATED", {
+            players: a.players
+        });
     });
 
     socket.on('disconnect', () => {

@@ -59,30 +59,27 @@ class Input extends PureComponent { // WARNING: DO NOT USE STATELESS COMPONENT H
                 tabIndex="-1"
                 onFocus={ this.props._onFocus }
                 onBlur={ this.props._onBlur }>
-                <div className="rn-gameprocess-input-rails" style={{
-                    "transform": `translate(-${ this.props.cursorX }px, -50%)`
-                }}>
+                <div className="rn-gameprocess-input-rails left">
                     {
-                        this.props.text.map((session, index) => (
-                            <div
+                        this.props.symbolsPassed.map((session, index) => (
+                            <span
                                 key={ index }
-                                ref={(ref) => {
-                                    if(!ref) return;
-
-                                    if(index === this.props.cursor) this.props.onReceiveCSplit(
-                                        ref.getBoundingClientRect().width
-                                    );
-                                    else if(index === this.props.cursor - 1) this.props.onReceivePSplit(
-                                        ref.getBoundingClientRect().width
-                                    );
-                                }}>
-                                <span
-                                    className={ `rn-gameprocess-input-letter${ (!session.passed) ? "" : " passed" }${ (!session.failed) ? "" : " failed" }` }>
-                                    { session.symbol }
-                                </span>
-                            </div>
-                        ))
-                }
+                                className={ `rn-gameprocess-input-letter passed${ (session.symbol !== " ") ? "" : " space" }${ (!session.failed) ? "" : " failed" }` }>
+                                { session.symbol }
+                            </span>
+                        ))  
+                    }
+                </div>
+                <div className="rn-gameprocess-input-rails right">
+                    {
+                        this.props.symbols.map((session, index) => (
+                            <span
+                                key={ index }
+                                className={ `rn-gameprocess-input-letter${ (session.symbol !== " ") ? "" : " space" }${ (!session.failed) ? "" : " failed" }` }>
+                                { session.symbol }
+                            </span>
+                        ))  
+                    }
                 </div>
             </section>
         );
@@ -128,12 +125,10 @@ class Hero extends Component {
         this.state = {
             text: [],
             cursor: 0,
-            cursorX: 0,
             inputInFocus: false
         }
 
         this.windowkd = null;
-        this.currSplit = this.prevSplit = 0; // Next / Prev spacing
     }
 
     componentDidMount() {
@@ -153,34 +148,56 @@ class Hero extends Component {
         }));
     }
 
+    processTyping = ({ key }) => {
+        if(!this.props.room.gameTime || this.props.room.initTime) return;
+
+        if(key === "Backspace") {
+            if(this.state.cursor <= 0) return;
+
+            let a = Array.from(this.state.text),
+                b = a[this.state.cursor - 1];
+
+            if(!b) return;
+
+            b.passed = false;
+
+            this.setState(({ cursor, cursorX }) => ({
+                cursor: cursor - 1,
+                text: a
+            }));
+        }
+
+        if(![...' abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.!?()-+#$'].includes(key))
+            return;
+
+        let a = Array.from(this.state.text);
+        let b = a[this.state.cursor];
+
+        if(!b) return; // end
+
+        let submit = false;
+        if(!b.passed) submit = true;
+
+        b.passed = true;
+        b.failed = b.symbol !== key;
+
+        if(submit && b.failed) submit = false;
+
+        this.setState(({ cursor, cursorX }) => ({
+            cursor: cursor + 1,
+            cursorX: cursorX + this.currSplit
+        }));
+
+        if(submit) {
+            this.props.socket.emit("GAME_SYMBOL_SUBMIT", {
+                roomID: this.props.room.id
+            });
+        }
+    }
+
     focusInput = a => {
         if(a) {
-            this.windowkd = ({ key }) => {
-                if(key === "Backspace") {
-                    if(this.state.cursor <= 0) return;
-
-                    this.setState(({ cursor, cursorX }) => ({
-                        cursor: cursor -1,
-                        cursorX: cursorX - this.prevSplit
-                    }));
-                }
-
-                if(![...' abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.!?()-+#$'].includes(key))
-                    return;
-
-                let a = Array.from(this.state.text);
-                let b = a[this.state.cursor];
-
-                if(!b) return; // end
-
-                b.passed = true;
-                b.failed = b.symbol !== key;
-
-                this.setState(({ cursor, cursorX }) => ({
-                    cursor: cursor + 1,
-                    cursorX: cursorX + this.currSplit
-                }));
-            }
+            this.windowkd = this.processTyping;
 
             window.addEventListener('keydown', this.windowkd);
             this.setState(() => ({
@@ -196,8 +213,6 @@ class Hero extends Component {
     }
 
     render() {
-        if(!this.props.room.players) return console.log("WTF") || null;
-
         return(
             <>
                 {
@@ -221,19 +236,9 @@ class Hero extends Component {
                     />
                     {/* input */}
                     <Input
-                        text={
-                            this.state.text.filter((io, ia) => {
-                                if(ia < window.innerWidth / 5 + this.state.cursor) {
-                                    return io;
-                                } else {
-                                    return false;
-                                }
-                            })
-                        }
+                        symbols={ this.state.text.filter(io => !io.passed).slice(0, this.state.cursor + window.innerWidth / 5) }
+                        symbolsPassed={ this.state.text.filter(io => io.passed) }
                         cursor={ this.state.cursor }
-                        cursorX={ this.state.cursorX }
-                        onReceiveCSplit={ a => this.currSplit = a }
-                        onReceivePSplit={ a => this.prevSplit = a }
                         _onFocus={ () => this.focusInput(true) }
                         _onBlur={ () => this.focusInput(false) }
                         inFocus={ this.state.inputInFocus }
@@ -250,10 +255,11 @@ class Hero extends Component {
     }
 }
 
-const mapStateToProps = ({ currentRoom, socketError, wsocketID }) => ({
+const mapStateToProps = ({ currentRoom, socketError, wsocketID, wsocket }) => ({
     room: currentRoom,
     socketError,
-    myID: wsocketID
+    myID: wsocketID,
+    socket: wsocket
 });
 
 // const mapActionsToProps = {

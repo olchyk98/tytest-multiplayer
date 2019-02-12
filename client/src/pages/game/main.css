@@ -110,13 +110,19 @@
     font-family:"Quicksand";
     font-size:2.25rem;
     font-weight:400;
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translateY(-50%);
+    height:100%;
+    width:50%;
     display:flex;
     justify-content:center;
     align-items:center;
+}
+
+.rn-gameprocess-input-rails.left {
+    justify-content:flex-end;
+}
+
+.rn-gameprocess-input-rails.right {
+    justify-content:flex-start;
 }
 
 .rn-gameprocess-input-rails > div {
@@ -149,6 +155,10 @@
     to {
         opacity:0;
     }
+}
+
+.rn-gameprocess-input-letter.space {
+    min-width:5px;
 }
 
 .rn-gameprocess-input-letter.passed {
