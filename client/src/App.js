@@ -59,6 +59,8 @@ class App extends Component {
 
         // Game started
         a.on("START_GAME_RESOLVED", ({ inGame }) => {
+            if(!this.props.currentRoom || !this.props.currentRoom.players.map(io => io.id).includes(this.props.myID)) return;
+
             this.props.setRoom({ inGame });
             this.props.route("GAME_PROCESS");
         });
@@ -85,9 +87,11 @@ class App extends Component {
     }
 }
 
-const mapStateToProps = ({ wsocket, currentPage }) => ({
+const mapStateToProps = ({ wsocket, currentPage, currentRoom, wsocketID }) => ({
     socket: wsocket,
-    page: currentPage
+    page: currentPage,
+    currentRoom,
+    myID: wsocketID
 });
 
 const mapActionsToProps = {

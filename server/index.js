@@ -166,6 +166,21 @@ w_io.on('connection', socket => {
         });
     });
 
+    socket.on("ROOM_KICK_USER", ({ roomID, userID }) => {
+        let a = rooms.find(io => io.id === roomID && io.players.map(io => io.id).includes(userID) && io.creator === socket.id);
+        if(!a) {
+            return socket.emit("ROOM_ERROR", { text: "Sorry, we couldn't confirm your game session", target: 'RED' });
+        }
+
+        a.players.splice(a.players.findIndex(io => io.id === userID), 1);
+
+        w_io.to(a.id).emit("ROOM_UPDATED", {
+            players: a.players
+        });
+
+        sockets[userID].emit("ROOM_ERROR", { text: "Oops, creator has kicked you.", target: 'BLUE' });
+    })
+
     socket.on('disconnect', () => {
         // Quit all games
         rooms.forEach((io, ia, arr) => {

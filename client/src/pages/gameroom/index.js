@@ -12,7 +12,7 @@ import FlipMove from 'react-flip-move';
 class Player extends PureComponent {
     render() {
         return(
-            <button className={ `definp rn-gameroom-players-mat-item${ (this.props.canBan) ? " banall" : "" }` }>
+            <button className={ `definp rn-gameroom-players-mat-item${ (this.props.canBan) ? " banall" : "" }` } onClick={ this.props.onBan }>
                 <span>{ this.props.nick }</span>
                 <div className="definp">
                     <FontAwesomeIcon icon={ faBan } />
@@ -74,6 +74,12 @@ class Hero extends Component {
                                             this.props.room.creator === this.props.myID &&
                                             this.props.room.creator !== session.id
                                         }
+                                        onBan={() => {
+                                            this.props.socket.emit("ROOM_KICK_USER", {
+                                                roomID: this.props.room.id,
+                                                userID: session.id
+                                            })    
+                                        }}
                                     />
                                 ))
                             }
